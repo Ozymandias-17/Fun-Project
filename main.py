@@ -2,7 +2,7 @@
 !pip install telethon==1.34
 !pip install pyTelegramBotAPI==4.21
 from telethon import TelegramClient
-from telebot import TeleBot, types
+from telebot import TeleBot, types, async_telebot
 import asyncio
 import nest_asyncio
 from tqdm.notebook import tqdm
