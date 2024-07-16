@@ -270,20 +270,25 @@ async def handle_message(message):
         response = message.text
 
     if comand[-1] == ("/" + post_info):
-        await bot.send_message(message.chat.id, 'Потребуется немного времени, чтобы собрать все посты в группе...')
 
-        async with client:
-            client.loop.run_until_complete(get_tg_channel(response))
+        try:
+            await bot.send_message(message.chat.id, 'Потребуется немного времени, чтобы собрать все посты в группе...')
+    
+            async with client:
+                client.loop.run_until_complete(get_tg_channel(response))
+    
+            df_bot = make_dataframe_posts()
+            df_bot.to_html("Data_with_posts.html")
+            views_distribution(df_bot)
+            toxic_and_emotion_stat(df_bot, "Posts")
+    
+            await bot.send_document(message.chat.id, document=open("Data_with_posts.html", "rb"))
+            await bot.send_photo(message.chat.id, photo=open("Views_distribution.png", "rb"))
+            await bot.send_photo(message.chat.id, photo=open("Result.png", "rb"))
 
-        df_bot = make_dataframe_posts()
-        df_bot.to_html("Data_with_posts.html")
-        views_distribution(df_bot)
-        toxic_and_emotion_stat(df_bot, "Posts")
-
-        await bot.send_document(message.chat.id, document=open("Data_with_posts.html", "rb"))
-        await bot.send_photo(message.chat.id, photo=open("Views_distribution.png", "rb"))
-        await bot.send_photo(message.chat.id, photo=open("Result.png", "rb"))
-
+        except:
+            await bot.send_message(message.chat.id, 'Перепроверь свой запрос, я не могу его обработать')        
+        
         post_id.clear()
         post_dates.clear()
         post_text.clear()
@@ -294,23 +299,28 @@ async def handle_message(message):
         comand.append(0)
 
     elif comand[-1] == ("/" + comments_info):
-        await bot.send_message(message.chat.id, 'Придётся немного подождать, идёт сбор комментариев...')
-
-        async with client:
-            client.loop.run_until_complete(get_tg_comments(response, limit=100))
-
-        global df_comments_bot
-        df_comments_bot = make_dataframe_comments()
-        df_comments_bot.to_html("Data_with_comments.html")
-        toxic_and_emotion_stat(df_comments_bot, "Comments")
-        top_commentators(df_comments_bot)
-
-        await bot.send_document(message.chat.id, document=open("Data_with_comments.html", "rb"))
-        await bot.send_photo(message.chat.id, photo=open("Result.png", "rb"))
-        await bot.send_photo(message.chat.id, photo=open("Top_commentators.png", "rb"))
-        await bot.send_message(message.chat.id, '''Если тебя интересуют конкретные пользователи (пользователь), ты можешь прислать мне их username.
-                                                   Я предоставлю сводку по комментариям этих пользовотелей в данной группе.''')
-
+        
+        try:
+            await bot.send_message(message.chat.id, 'Придётся немного подождать, идёт сбор комментариев...')
+    
+            async with client:
+                client.loop.run_until_complete(get_tg_comments(response, limit=100))
+    
+            global df_comments_bot
+            df_comments_bot = make_dataframe_comments()
+            df_comments_bot.to_html("Data_with_comments.html")
+            toxic_and_emotion_stat(df_comments_bot, "Comments")
+            top_commentators(df_comments_bot)
+    
+            await bot.send_document(message.chat.id, document=open("Data_with_comments.html", "rb"))
+            await bot.send_photo(message.chat.id, photo=open("Result.png", "rb"))
+            await bot.send_photo(message.chat.id, photo=open("Top_commentators.png", "rb"))
+            await bot.send_message(message.chat.id, '''Если тебя интересуют конкретные пользователи (пользователь), ты можешь прислать мне их username.
+                                                       Я предоставлю сводку по комментариям этих пользовотелей в данной группе.''')
+        
+        except:
+            await bot.send_message(message.chat.id, 'Перепроверь свой запрос, я не могу его обработать')
+    
         id.clear()
         FI.clear()
         user_name.clear()
@@ -333,5 +343,9 @@ async def handle_message(message):
         await bot.send_document(message.chat.id, document=open("Tonality_spec_users_comments.html", "rb"))
         await bot.send_document(message.chat.id, document=open("Emotion_spec_users_comments.html", "rb"))
         await bot.send_document(message.chat.id, document=open("Toxic_spec_users_comments.html", "rb"))
+    
+    else:
+        await bot.send_message(message.chat.id, 'Перепроверь свой запрос, я не могу его обработать')
+
 
 asyncio.run(bot.polling(none_stop=True))
