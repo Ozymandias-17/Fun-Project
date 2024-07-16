@@ -16,7 +16,7 @@ nest_asyncio.apply()
 # Authorization
 api_id = "YOUR_ID"
 api_hash = "YOUR_HASH"
-bot_tok = "YOUR_BOT_TOKEN"
+bot_token = "YOUR_BOT_TOKEN"
 client = TelegramClient("test", api_id, api_hash) # Here "test" — is the name of the file that will be created to store application authorization data
 client.connect() # or .start()
 
@@ -103,6 +103,11 @@ def make_dataframe_posts(calculate_inf=True):
                 elif row_ton['label'].lower() == 'positive':
                     positive.append(row_ton['score'])
 
+        calculated_inf = pd.DataFrame(list(zip(prior_emotion, toxicity, neutral, negative, positive)),
+                                      columns=["Prior Emotion", "Toxicity", "Neutral", "Negative", "Positive"])
+
+        return df.join(calculated_inf).set_index("Date")
+
 
 # Function for parsing channel comments
 async def get_tg_comments(username, limit=None):    
@@ -170,11 +175,6 @@ def make_dataframe_comments(calculate_inf=True):
 
         return df_comments.join(calculated_inf)
 
-        calculated_inf = pd.DataFrame(list(zip(prior_emotion, toxicity, neutral, negative, positive)),
-                                      columns=["Prior Emotion", "Toxicity", "Neutral", "Negative", "Positive"])
-
-        return df.join(calculated_inf).set_index("Date")
-
 
 # Distribution of views
 def views_distribution(df):
@@ -219,7 +219,7 @@ def top_commentators(data, how_many=15):
 
 
 # Creating Bot
-bot = async_telebot.AsyncTeleBot("YOUR_BOT_TOKEN")
+bot = async_telebot.AsyncTeleBot(bot_token)
 
 # commands
 post_info = "group_posts"
