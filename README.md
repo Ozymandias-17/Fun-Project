@@ -12,7 +12,7 @@ This project is a Telegram bot designed to parse and analyze posts and comments 
 ## Libraries Used in Project
 - Telegram API: Telethon, TeleBot;
 - Data Analysis: Pandas, Matplotlib
-- Sentiment Analysis: Transformers (models from HuggingFace)
+- Sentiment Analysis: Transformers (models from Hugging Face)
 
 ## Commands
 - /start: Greeting user. Show main commands;
