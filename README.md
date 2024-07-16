@@ -6,6 +6,7 @@ This project is a Telegram bot designed to parse and analyze posts and comments 
 ## Features
 - Parse Channel Posts/Comments: Extract posts and comments from specified Telegram channels;
 - Statistics: Provide various statistics about the posts/comments, such as distribution of views, users activity, etc;
+- Toxicity Analysis: Categorize the toxicity of the posts/comments (toxic, non toxic);
 - Sentiment Analysis: Assess the tonality of the posts/comments (positive, negative, neutral);
 - Emotion Analysis: Identify primary emotions in the posts/comments (e.g., joy, sadness, anger, etc.).
 
