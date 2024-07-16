@@ -185,7 +185,7 @@ def views_distribution(df):
     plt.gca().set_axisbelow(True)
     plt.savefig("Views_distribution.png")
 
-# Toxicity and emotions
+# Toxicity, emotions and tonality overview
 def toxic_and_emotion_stat(df, object):
     plt.style.use("bmh")
     fig, axs = plt.subplots(3, figsize=(6, 6), constrained_layout=True)
