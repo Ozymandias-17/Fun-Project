@@ -17,7 +17,7 @@ nest_asyncio.apply()
 api_id = "YOUR_ID"
 api_hash = "YOUR_HASH"
 bot_tok = "YOUR_BOT_TOKEN"
-client = TelegramClient("test", api_id, api_hash) # Here 'test' — is the name of the file that will be created to store application authorization data
+client = TelegramClient("test", api_id, api_hash) # Here "test" — is the name of the file that will be created to store application authorization data
 client.connect() # or .start()
 
 
