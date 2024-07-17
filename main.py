@@ -22,7 +22,7 @@ client.connect() # or .start()
 
 
 # Function for parsing channel posts
-async def get_tg_channel(username, limit=None, get_users=False):    
+async def get_tg_channel(username, limit=None):    
     username = await client.get_entity(username)
     messages = client.iter_messages(username, limit=limit)
     
@@ -55,11 +55,6 @@ async def get_tg_channel(username, limit=None, get_users=False):
                 post_likes.append(0)
                 post_emotion_types.append("-")
 
-    if get_users == True:
-        users = client.iter_participants(username)
-        async for user in users:
-            users_list.append(user.username)
-
 # Function to make dataframe with posts
 def make_dataframe_posts(calculate_inf=True):
     response_1 = np.array(post_likes)/np.array(post_views)
@@ -71,10 +66,7 @@ def make_dataframe_posts(calculate_inf=True):
     df = pd.DataFrame(data, columns = ["ID", "Date", "Text", "Views_Count", "Reaction_Count", "Emotion_Types",
                                        "Comments_Count", "Response_1", "Response_2"])
 
-    if calculate_inf==False:
-        return df.set_index("Date")
-
-    else:
+    if calculate_inf:
         clf_emotion = pipeline(task='sentiment-analysis', model='cointegrated/rubert-tiny2-cedr-emotion-detection', top_k=None)
         clf_toxicicity = pipeline(task='sentiment-analysis', model='khvatov/ru_toxicity_detector', top_k=None)
         clf_tonality = pipeline(task='sentiment-analysis', model='seara/rubert-tiny2-russian-sentiment', top_k=None)
@@ -108,6 +100,9 @@ def make_dataframe_posts(calculate_inf=True):
 
         return df.join(calculated_inf).set_index("Date")
 
+    else:
+        return df.set_index("Date")
+
 
 # Function for parsing channel comments
 async def get_tg_comments(username, limit=None):    
@@ -139,9 +134,6 @@ def make_dataframe_comments(calculate_inf=True):
     df_comments = pd.DataFrame(data, columns = ["ID", "FI", "Username", "Comment"])
 
     if calculate_inf == False:
-        return pd.DataFrame(data, columns = ["ID", "FI", "Username", "Comment"])
-
-    else:
         clf_emotion = pipeline(task='sentiment-analysis', model='cointegrated/rubert-tiny2-cedr-emotion-detection', top_k=None)
         clf_toxicicity = pipeline(task='sentiment-analysis', model='khvatov/ru_toxicity_detector', top_k=None)
         clf_tonality = pipeline(task='sentiment-analysis', model='seara/rubert-tiny2-russian-sentiment', top_k=None)
@@ -174,6 +166,9 @@ def make_dataframe_comments(calculate_inf=True):
                                       columns=["Prior Emotion", "Toxicity", "Neutral", "Negative", "Positive"])
 
         return df_comments.join(calculated_inf)
+
+    else:
+        return pd.DataFrame(data, columns = ["ID", "FI", "Username", "Comment"])
 
 
 # Distribution of views
