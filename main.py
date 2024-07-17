@@ -116,12 +116,12 @@ async def get_tg_comments(username, limit=None):
                     try:
                         id.append(reply.from_id.user_id)
                         us = await client.get_entity(reply.from_id.user_id)
-                        FI.append(" ".join([str(us.first_name), str(us.last_name)]).replace("None", "-"))
+                        full_name.append(" ".join([str(us.first_name), str(us.last_name)]).replace("None", "-"))
                         user_name.append(str(us.username).replace("None", "-"))
                     except:
                         id.append(reply.from_id.channel_id)
                         us = await client.get_entity(reply.from_id.channel_id)
-                        FI.append("Admin")
+                        full_name.append("Admin")
                         user_name.append(str(us.title))
                     comments_text.append(reply.message.replace("\n", " ").replace("  ", " "))
         
@@ -130,10 +130,10 @@ async def get_tg_comments(username, limit=None):
 
 # Function to make dataframe with comments
 def make_dataframe_comments(calculate_inf=True):
-    data = list(zip(id, FI, user_name, comments_text))
-    df_comments = pd.DataFrame(data, columns = ["ID", "FI", "Username", "Comment"])
+    data = list(zip(id, full_name, user_name, comments_text))
+    df_comments = pd.DataFrame(data, columns = ["ID", "Full_name", "Username", "Comment"])
 
-    if calculate_inf == False:
+    if calculate_inf:
         clf_emotion = pipeline(task='sentiment-analysis', model='cointegrated/rubert-tiny2-cedr-emotion-detection', top_k=None)
         clf_toxicicity = pipeline(task='sentiment-analysis', model='khvatov/ru_toxicity_detector', top_k=None)
         clf_tonality = pipeline(task='sentiment-analysis', model='seara/rubert-tiny2-russian-sentiment', top_k=None)
@@ -168,7 +168,7 @@ def make_dataframe_comments(calculate_inf=True):
         return df_comments.join(calculated_inf)
 
     else:
-        return pd.DataFrame(data, columns = ["ID", "FI", "Username", "Comment"])
+        return df_comments
 
 
 # Distribution of views
@@ -251,7 +251,7 @@ post_views = []
 post_comments = []
 
 id = []
-FI = []
+full_name = []
 user_name = []
 comments_text = []
 
@@ -317,7 +317,7 @@ async def handle_message(message):
             await bot.send_message(message.chat.id, 'Перепроверь свой запрос, я не могу его обработать')
     
         id.clear()
-        FI.clear()
+        full_name.clear()
         user_name.clear()
         comments_text.clear()
         comand.append(0)
